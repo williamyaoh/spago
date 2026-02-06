@@ -776,6 +776,7 @@ mkBundleEnv bundleArgs { dependencies, purs } = do
       , type: bundleType
       , sourceMaps: bundleArgs.sourceMaps
       , extraArgs
+      , pursArgs: Array.fromFoldable bundleArgs.pursArgs
       }
     argsOutput = bundleArgs.output <#> (rootPath </> _)
     newWorkspace = workspace

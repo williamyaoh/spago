@@ -40,6 +40,7 @@ type BundleOptions =
   , platform :: BundlePlatform
   , type :: BundleType
   , extraArgs :: Array String
+  , pursArgs :: Array String
   }
 
 run :: ∀ a. Spago (BundleEnv a) Unit
@@ -163,7 +164,7 @@ nodeTargetPolyfill = Str.joinWith ";"
 -- | Validate that the entry module declares and exports a `main` function
 validateMainExport :: forall a. String -> Spago (BundleEnv a) Unit
 validateMainExport moduleName = do
-  { rootPath, selected, dependencies } <- ask
+  { rootPath, selected, dependencies, bundleOptions } <- ask
 
   let
     globs = Build.getBuildGlobs
@@ -174,7 +175,7 @@ validateMainExport moduleName = do
       , selected: NEA.singleton selected
       }
 
-  Purs.graph rootPath globs [] >>= case _ of
+  Purs.graph rootPath globs bundleOptions.pursArgs >>= case _ of
     Left err -> logWarn $ "Could not verify main export: " <> show err
     Right (ModuleGraph graph) ->
       case Map.lookup moduleName graph of
